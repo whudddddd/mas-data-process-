@@ -34,6 +34,11 @@ def getline(thefilepath, desired_line_number):#读取文本文档的指定行，
                 matrax.append(liness)
                 liness=[]
         return matrax
+def getbasicdata(getbasicdata,num):#读取第一行数据中的制定位置元素
+    with open(getbasicdata) as basicdatas:
+        basicdatas=basicdatas.readline().split(',')
+        basicdata=float(basicdatas[num])
+        return basicdata
 #data=getline(r'D:\电离层数据\火星电离层\mgs-m-rss-5-sdp-v1\mors_1007\eds\8358d47a.eds',2)
 paths=['D:\电离层数据\火星电离层\mgs-m-rss-5-sdp-v1\mors_1007\eds',
 'D:\电离层数据\火星电离层\mgs-m-rss-5-sdp-v1\mors_1010\eds',
@@ -55,21 +60,79 @@ for path in paths:
 #print(files,len(files))
 i=0
 datas=[]
+szas=[]
+ltsts=[]
+sun_latis=[]
+sun_longs=[]
+pro_latis=[]
+pro_longs=[]
+NM=[]
+Nm=[]
 for file in files:
     data= getline(file, 2)
     datas.extend(data)
-print(len(datas))
+    sza=getbasicdata(file,17)
+    szas.append(sza)#掩星时刻太阳天顶角
+    ltst=getbasicdata(file,16)
+    ltsts.append(ltst)#掩星时刻真太阳时
+    sun_lati=getbasicdata(file,11)
+    sun_latis.append(sun_lati)#掩星发生时刻太阳在以火星为中心的纬度
+    sun_long=getbasicdata(file,12)
+    sun_longs.append(sun_long)#掩星发生时刻太阳在以火星为中心的经度
+    pro_lati = getbasicdata(file, 7)
+    pro_latis.append(pro_lati)  # 掩星发生时刻太阳在以火星为中心的纬度
+    pro_long = getbasicdata(file, 9)
+    pro_longs.append(pro_long)  # 掩星发生时刻太阳在以火星为中心的经度
+    for NE in data:
+        NM.append(NE[4])
+    Nm.append((sorted(NM, reverse=True))[0])#每个剖面的电子密度峰值
+    NM=[]
 lon=[]
 lati=[]
+ne=[]
+height=[]
+radius=[]
+Nm=[]
 for items in datas:
     lon.append(items[3])
     lati.append(items[2])
-print(len(lon))
-fig=plt.figure()
-ax=fig.add_subplot(111)
+    ne.append(items[4])
+    #Nm.append((sorted(ne,reverse=True))[0])#
+    height.append(items[1])
+    radius.append(items[0])
+'''with open('2.txt','a') as a:
+    a.write(str(height))'''
+with open('3.txt','a') as a:
+    a.write(str(ne))
+'''fig=plt.figure()
+ax=fig.add_subplot(221)
+bx=fig.add_subplot(222)
+cx=fig.add_subplot(223)
 ax.scatter(lon,lati,marker='.')
 ax.set_xlabel('longitude')
 ax.set_ylabel(' latitude ')
 ax.grid(color='g', linestyle='-', linewidth=0.5)
-fig.show()
+bx.scatter(ltsts,pro_latis,marker='.',color='y')
+bx.set_xlabel('LSTS')
+bx.set_ylabel('pro_lati')
+bx.grid(color='r',linewidth=0.5)
+cx.scatter(ne,height,marker='.',color='b')
+cx.set_xlabel('ne')
+cx.set_ylabel('height')
+cx.grid(color='r',linewidth=0.5)
+plt.show()'''
+'''fig=plt.figure()
+cx=fig.add_subplot(111)
+cx.scatter(ne,height,marker='.',color='b')
 
+cx.set_xlabel('Ne/10^10*m^-3')
+cx.set_ylabel('height')
+cx.grid(color='r',linewidth=0.5)
+fig.show()'''
+fig=plt.figure()
+dx=fig.add_subplot(111)
+dx.scatter(Nm,ltsts,marker='.',color='b')
+dx.set_xlabel('LTST')
+dx.set_ylabel('Nm')
+dx.grid(color='r',linewidth=0.5)
+fig.show()

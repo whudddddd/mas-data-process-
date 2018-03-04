@@ -68,12 +68,14 @@ pro_latis=[]
 pro_longs=[]
 NM=[]
 Nm=[]
+Hm=[]
+HM=[]
 for file in files:
     data= getline(file, 2)
     datas.extend(data)
-    sza=getbasicdata(file,17)
+    sza=getbasicdata(file,18)
     szas.append(sza)#掩星时刻太阳天顶角
-    ltst=getbasicdata(file,16)
+    ltst=getbasicdata(file,17)
     ltsts.append(ltst)#掩星时刻真太阳时
     sun_lati=getbasicdata(file,11)
     sun_latis.append(sun_lati)#掩星发生时刻太阳在以火星为中心的纬度
@@ -85,14 +87,24 @@ for file in files:
     pro_longs.append(pro_long)  # 掩星发生时刻太阳在以火星为中心的经度
     for NE in data:
         NM.append(NE[4])
+        #HM.append(NE[1])
+    i=(sorted(NM, reverse=True))[0]
     Nm.append((sorted(NM, reverse=True))[0])#每个剖面的电子密度峰值
+    for item in data:
+        if i in item:
+            Hm.append(item[1])
+            break
+
+
+
+    #Hm.append((sorted(HM, reverse=True))[0])
     NM=[]
+    #HM=[]
 lon=[]
 lati=[]
 ne=[]
 height=[]
 radius=[]
-Nm=[]
 for items in datas:
     lon.append(items[3])
     lati.append(items[2])
@@ -100,39 +112,61 @@ for items in datas:
     #Nm.append((sorted(ne,reverse=True))[0])#
     height.append(items[1])
     radius.append(items[0])
-'''with open('2.txt','a') as a:
-    a.write(str(height))'''
-with open('3.txt','a') as a:
-    a.write(str(ne))
-'''fig=plt.figure()
-ax=fig.add_subplot(221)
-bx=fig.add_subplot(222)
-cx=fig.add_subplot(223)
-ax.scatter(lon,lati,marker='.')
+fig=plt.figure(1)
+ax=fig.add_subplot(111)
+ax.scatter(lon,lati,marker='.',color='b')#经度随纬度
 ax.set_xlabel('longitude')
 ax.set_ylabel(' latitude ')
-ax.grid(color='g', linestyle='-', linewidth=0.5)
-bx.scatter(ltsts,pro_latis,marker='.',color='y')
+ax.grid(color='r', linestyle='-', linewidth=0.5)
+fig.show()
+fig=plt.figure(7)
+bx=fig.add_subplot(111)
+bx.scatter(ltsts,pro_latis,marker='.',color='b')#剖面纬度随真太阳时
 bx.set_xlabel('LSTS')
 bx.set_ylabel('pro_lati')
 bx.grid(color='r',linewidth=0.5)
-cx.scatter(ne,height,marker='.',color='b')
-cx.set_xlabel('ne')
-cx.set_ylabel('height')
-cx.grid(color='r',linewidth=0.5)
-plt.show()'''
-'''fig=plt.figure()
-cx=fig.add_subplot(111)
-cx.scatter(ne,height,marker='.',color='b')
+fig.show()
 
+fig=plt.figure(2)
+cx=fig.add_subplot(111)
+cx.scatter(ne,height,marker='.',color='b')#高度随电子密度的变化图
 cx.set_xlabel('Ne/10^10*m^-3')
 cx.set_ylabel('height')
 cx.grid(color='r',linewidth=0.5)
-fig.show()'''
-fig=plt.figure()
+fig.show()
+fig=plt.figure(3)
 dx=fig.add_subplot(111)
-dx.scatter(Nm,ltsts,marker='.',color='b')
+dx.scatter(ltsts,Nm,marker='.',color='b')#峰值密度随真太阳时的关系
 dx.set_xlabel('LTST')
 dx.set_ylabel('Nm')
 dx.grid(color='r',linewidth=0.5)
 fig.show()
+fig=plt.figure(4)
+dx=fig.add_subplot(111)
+dx.scatter(ltsts,Hm,marker='.',color='b')#峰值高度随真太阳时的关系
+dx.set_xlabel('LTST')
+dx.set_ylabel('Hm')
+dx.grid(color='r',linewidth=0.5)
+fig.show()
+fig=plt.figure(5)
+dx=fig.add_subplot(111)
+dx.scatter(szas,Hm,marker='.',color='b')#峰值高度随天顶角变化的关系
+dx.set_xlabel('SZA')
+dx.set_ylabel('Hm')
+dx.grid(color='r',linewidth=0.5)
+fig.show()
+fig=plt.figure(6)
+dx=fig.add_subplot(111)
+dx.scatter(szas,Nm,marker='.',color='b')#峰密度随天顶角变化的关系
+dx.set_xlabel('SZA')
+dx.set_ylabel('Nm')
+dx.grid(color='r',linewidth=0.5)
+fig.show()
+fig=plt.figure(8)
+bx=fig.add_subplot(111)
+bx.scatter(ltsts,pro_longs,marker='.',color='b')#剖面纬度随真太阳时
+bx.set_xlabel('LSTS')
+bx.set_ylabel('pro_long')
+bx.grid(color='r',linewidth=0.5)
+fig.show()
+
